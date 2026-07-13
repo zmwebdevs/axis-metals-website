@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { CtaBand, Footer, Header, PageHero } from "../site-shell";
+import { Footer, Header, PageHero } from "../site-shell";
 
 export const metadata: Metadata = {
   title: "Services",
@@ -89,11 +89,6 @@ export default function ServicesPage() {
             </div>
           </div>
         </section>
-        <CtaBand
-          eyebrow="Ready to scope a project?"
-          title="Let’s talk about your steel package."
-          label="Contact Axis Metals"
-        />
       </main>
       <Footer />
     </>
