@@ -38,7 +38,6 @@ export function Header() {
             width={289}
             height={308}
             priority
-            style={{ width: "auto", height: "auto" }}
           />
         </Link>
         <div className="header-right">
