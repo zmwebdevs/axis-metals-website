@@ -113,7 +113,6 @@ export function Footer() {
             alt="Axis Metals"
             width={289}
             height={308}
-            style={{ width: "auto", height: "auto" }}
           />
           <p>
             Structural steel and miscellaneous metals for construction projects
