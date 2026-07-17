@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { contactPhoneHref } from "./site-config";
 
 const links = [
@@ -16,6 +16,7 @@ const links = [
 export function Header() {
   const pathname = usePathname();
   const mobileMenuRef = useRef<HTMLDetailsElement>(null);
+  const [hidden, setHidden] = useState(false);
 
   const closeMobileMenu = () => {
     mobileMenuRef.current?.removeAttribute("open");
@@ -25,22 +26,60 @@ export function Header() {
     closeMobileMenu();
   }, [pathname]);
 
+  useEffect(() => {
+    let lastY = window.scrollY;
+    let ticking = false;
+
+    const onScroll = () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => {
+        const y = window.scrollY;
+        const delta = y - lastY;
+        // Keep the header visible near the top and while the mobile menu is open
+        if (y < 120 || mobileMenuRef.current?.hasAttribute("open")) {
+          setHidden(false);
+        } else if (delta > 4) {
+          setHidden(true);
+        } else if (delta < -4) {
+          setHidden(false);
+        }
+        lastY = y;
+        ticking = false;
+      });
+    };
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
   return (
-    <header className="site-header">
+    <header className={`site-header${hidden ? " header-hidden" : ""}`}>
       <a href="#main-content" className="skip-link">
         Skip to content
       </a>
       <div className="nav-wrap">
         <Link href="/" className="brand" aria-label="Axis Metals home">
           <Image
-            src="/images/axis-logo.png"
+            src="/images/axis-wordmark.png"
             alt=""
-            width={289}
-            height={308}
+            width={482}
+            height={161}
             priority
           />
         </Link>
         <div className="header-right">
+          <nav className="desktop-nav" aria-label="Main navigation">
+            {links.map(([label, href]) => (
+              <Link
+                className={pathname === href ? "active" : ""}
+                key={href}
+                href={href}
+              >
+                {label}
+              </Link>
+            ))}
+          </nav>
           <div className="header-meta">
             <div
               className="country-marks"
@@ -63,17 +102,6 @@ export function Header() {
               416-746-2347
             </a>
           </div>
-          <nav className="desktop-nav" aria-label="Main navigation">
-            {links.map(([label, href]) => (
-              <Link
-                className={pathname === href ? "active" : ""}
-                key={href}
-                href={href}
-              >
-                {label}
-              </Link>
-            ))}
-          </nav>
         </div>
         <details className="mobile-menu" ref={mobileMenuRef}>
           <summary aria-label="Open navigation">
