@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
+import { formspreeFormId } from "../site-config";
 
 type Status = "idle" | "submitting" | "success" | "error";
 
@@ -15,18 +16,41 @@ export function ContactForm() {
 
     const form = event.currentTarget;
     const data = new FormData(form);
+    const name = String(data.get("name") || "").trim();
+    const email = String(data.get("email") || "").trim();
+    const phone = String(data.get("phone") || "").trim();
+    const company = String(data.get("company") || "").trim();
+    const message = String(data.get("message") || "").trim();
+    const website = String(data.get("website") || "").trim();
+
+    if (website) {
+      form.reset();
+      setStatus("success");
+      return;
+    }
+
+    if (!formspreeFormId) {
+      setStatus("error");
+      setErrorMessage(
+        "The contact form is not configured yet. Please email info@axismetals.ca or call 416-746-2347.",
+      );
+      return;
+    }
 
     try {
-      const response = await fetch("/api/contact", {
+      const response = await fetch(`https://formspree.io/f/${formspreeFormId}`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify({
-          name: String(data.get("name") || "").trim(),
-          email: String(data.get("email") || "").trim(),
-          phone: String(data.get("phone") || "").trim(),
-          company: String(data.get("company") || "").trim(),
-          message: String(data.get("message") || "").trim(),
-          website: String(data.get("website") || "").trim(),
+          name,
+          email,
+          phone,
+          company,
+          message,
+          _gotcha: website,
         }),
       });
 

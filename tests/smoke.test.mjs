@@ -19,16 +19,20 @@ test("seo routes exist", () => {
   readFileSync(join(root, "app/not-found.tsx"), "utf8");
 });
 
-test("contact API and form exist for Vercel", () => {
-  const api = readFileSync(join(root, "app/api/contact/route.ts"), "utf8");
+test("contact form posts directly to Formspree for static hosting", () => {
   const form = readFileSync(join(root, "app/contact/contact-form.tsx"), "utf8");
-  assert.match(api, /RESEND_API_KEY/);
-  assert.match(api, /FORMSPREE_FORM_ID/);
-  assert.match(form, /\/api\/contact/);
+  assert.match(form, /formspree\.io/);
+  assert.doesNotMatch(form, /\/api\/contact/);
 });
 
-test("security headers configured for Vercel", () => {
+test("static export is configured for cPanel", () => {
   const config = readFileSync(join(root, "next.config.ts"), "utf8");
-  assert.match(config, /Content-Security-Policy/);
-  assert.match(config, /X-Frame-Options/);
+  assert.match(config, /output:\s*"export"/);
+  assert.match(config, /unoptimized:\s*true/);
+});
+
+test("security headers are set for Apache/cPanel", () => {
+  const htaccess = readFileSync(join(root, "public/.htaccess"), "utf8");
+  assert.match(htaccess, /Content-Security-Policy/);
+  assert.match(htaccess, /X-Frame-Options/);
 });
