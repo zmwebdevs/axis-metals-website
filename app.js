@@ -8,13 +8,14 @@ const app = next({
 });
 const handle = app.getRequestHandler();
 
-try {
-  await app.prepare();
-} catch (error) {
-  console.error("Failed to start Next.js", error);
-  process.exit(1);
-}
-
-createServer((req, res) => {
-  handle(req, res);
-}).listen(port);
+app
+  .prepare()
+  .then(() => {
+    createServer((req, res) => {
+      handle(req, res);
+    }).listen(port);
+  })
+  .catch((error) => {
+    console.error("Failed to start Next.js", error);
+    process.exit(1);
+  });
