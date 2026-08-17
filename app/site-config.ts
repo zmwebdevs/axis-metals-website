@@ -1,11 +1,7 @@
-/** Production site URL — set NEXT_PUBLIC_SITE_URL before `npm run build`. */
+/** Production site URL — override with NEXT_PUBLIC_SITE_URL on Vercel if needed. */
 export const siteUrl =
   process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ||
   "https://www.axismetals.ca";
-
-/** Formspree form ID — baked in at build time for the static cPanel export. */
-export const formspreeFormId =
-  process.env.NEXT_PUBLIC_FORMSPREE_FORM_ID?.trim() || "";
 
 export const siteName = "Axis Metals";
 
